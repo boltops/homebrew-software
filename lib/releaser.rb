@@ -1,6 +1,4 @@
 require "aws-sdk"
-require "pp"
-require "byebug"
 require "json"
 
 class Releaser
@@ -33,10 +31,6 @@ class Releaser
     files = package_files(homebrew_package)
     metadata_path = files.find {|x| x.include?('metadata.json') }
     metadata = get_metadata(metadata_path)
-    puts "basename #{metadata["basename"]}"
-    puts "sha256 #{metadata["sha256"]}"
-    puts "version #{metadata["version"]}"
-
 
     cask_file = "Casks/bolts.rb"
     lines = File.readlines(cask_file).map do |line|
