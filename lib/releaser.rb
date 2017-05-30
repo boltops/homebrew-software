@@ -27,9 +27,10 @@ class Releaser
     #   bolts/0.0.1/bolts_0.0.1-3_amd64.deb/
     # ]
 
-    homebrew_package = packages.find { |x| x.include?('.pkg') }
+    homebrew_package = packages.select { |x| x.include?('.pkg') }.last
     files = package_files(homebrew_package)
     metadata_path = files.find {|x| x.include?('metadata.json') }
+    puts "Using metadata: s3://#{@s3_bucket}/#{metadata_path}"
     metadata = get_metadata(metadata_path)
 
     cask_file = "Casks/bolts.rb"
@@ -37,17 +38,7 @@ class Releaser
       content_line(line, metadata)
     end
     IO.write(cask_file, lines.join(''))
-
-    # Will be useful to update website
-    # packages.each do |package|
-    #   puts "package: #{package.inspect}"
-    #   files = package_files(package)
-    #   metadata_path = files.find {|x| x.include?('metadata.json') }
-    #   metadata = get_metadata(metadata_path)
-    #   puts "basename #{metadata["basename"]}"
-    #   puts "sha256 #{metadata["sha256"]}"
-    #   puts "version #{metadata["version"]}"
-    # end
+    puts "File #{cask_file} updated."
   end
 
   def content_line(line, metadata)
