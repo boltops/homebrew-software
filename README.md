@@ -12,7 +12,7 @@ Tap this repository:
 
 Install the packages it contains like any other Homebrew package:
 
-    brew install bolts
+    brew cask install bolts
 
 ## Updating
 
