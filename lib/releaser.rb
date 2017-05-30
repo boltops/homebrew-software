@@ -3,7 +3,7 @@ require "json"
 
 class Releaser
   def initialize(s3_bucket=nil)
-    @s3_bucket = s3_bucket || 'bolt-packages'
+    @s3_bucket = s3_bucket || 'packages.boltops.com'
   end
 
   # replace the contents of Casks/bolts.rb with the updated info from s3
@@ -27,6 +27,7 @@ class Releaser
     #   bolts/0.0.1/bolts_0.0.1-3_amd64.deb/
     # ]
 
+    packages = latest_packages(packages)
     homebrew_package = packages.select { |x| x.include?('.pkg') }.last
     files = package_files(homebrew_package)
     metadata_path = files.find {|x| x.include?('metadata.json') }
@@ -60,6 +61,38 @@ class Releaser
     resp = s3.get_object(bucket: @s3_bucket, key: s3_path)
     raw_metadata = resp.body.read
     JSON.parse(raw_metadata)
+  end
+
+  # Public: In case there there is multiple packages in the same version (0.0.1) folder.
+  #   Filter down to the latest version only.
+  #
+  # package_folders  - Array of Strings that are folder paths.
+  #   Example: %w[
+  #     bolts/0.0.1/bolts-0.0.1-1.el7.x86_64.rpm/
+  #     bolts/0.0.1/bolts-0.0.1-1.pkg/
+  #     bolts/0.0.1/bolts-0.0.1-3.el7.x86_64.rpm/
+  #     bolts/0.0.1/bolts-0.0.1-3.pkg/
+  #     bolts/0.0.1/bolts_0.0.1-1_amd64.deb/
+  #     bolts/0.0.1/bolts_0.0.1-3_amd64.deb/
+  #   ]
+  #
+  # Examples
+  #
+  #   latest_packages(package_folders)
+  #   # => %w[
+  #     bolts/0.0.1/bolts-0.0.1-3.el7.x86_64.rpm/
+  #     bolts/0.0.1/bolts-0.0.1-3.pkg/
+  #     bolts/0.0.1/bolts_0.0.1-3_amd64.deb/
+  #   ]
+  #
+  # Returns the duplicated String.
+  def latest_packages(package_folders)
+    # determine latest package version
+    version_numbers = package_folders.map do |path|
+      path.split('/').last.match(/bolts[_-](\d+\.\d+\.\d+-\d+)/)[1]
+    end
+    latest_version = version_numbers.sort_by { |v| Gem::Version.new(v) }.last
+    package_folders.select { |p| p.include?(latest_version) }
   end
 
   # Public: Returns files in the folder.
