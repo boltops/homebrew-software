@@ -8,7 +8,7 @@ cask 'bolts' do
   name 'Bolts'
   homepage 'https://boltops.com/toolkit'
 
-  pkg package_name
+  pkg package_name.sub('.dmg','.pkg')
 
   uninstall pkgutil: 'test.boltops.pkg.bolts'
 end
