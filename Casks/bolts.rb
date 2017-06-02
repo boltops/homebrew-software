@@ -1,8 +1,8 @@
 # This file is generated. To update it, run rake release:update
 cask 'bolts' do
-  version '0.4.1'
-  sha256 '886b2d37b7fdf96873dc52182c52baf76e675cd72d34f35348e75f0d8bd8d17d'
-  package_name = 'bolts-0.4.1-1.pkg'
+  version '0.5.0'
+  sha256 '13621098be8b7ec7f5e2b5d02a6bed3c8a58b6b30e21dd78b1ab9a49a3906157'
+  package_name = 'bolts-0.5.0-1.pkg'
 
   url "https://s3-us-west-2.amazonaws.com/packages.boltops.com/bolts/#{version}/#{package_name}/#{package_name}"
   name 'Bolts'
