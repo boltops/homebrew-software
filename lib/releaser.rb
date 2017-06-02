@@ -28,7 +28,7 @@ class Releaser
     # ]
 
     packages = latest_packages(packages)
-    homebrew_package = packages.select { |x| x.include?('.pkg') }.last
+    homebrew_package = packages.select { |x| x =~ /\.(dmg|pkg)/ }.last
     files = package_files(homebrew_package)
     metadata_path = files.find {|x| x.include?('metadata.json') }
     puts "Using metadata: s3://#{@s3_bucket}/#{metadata_path}"
