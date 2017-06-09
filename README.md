@@ -8,7 +8,7 @@ A [Homebrew tap] for various BoltOps projects.
 
 Tap this repository:
 
-    brew tap boltops/bolts
+    brew tap boltopslabs/software
 
 Install the packages it contains like any other Homebrew package:
 
