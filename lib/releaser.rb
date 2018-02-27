@@ -1,5 +1,6 @@
-require "aws-sdk"
+require "aws-sdk-s3"
 require "json"
+require "version_sorter"
 
 class Releaser
   def initialize(s3_bucket=nil)
@@ -88,12 +89,14 @@ class Releaser
   #
   # Returns the duplicated String.
   def latest_packages(package_folders)
-    # determine latest package version
-    version_numbers = package_folders.map do |path|
-      path.split('/').last.match(/bolts[_-](\d+\.\d+\.\d+-\d+)/)[1]
-    end
-    latest_version = version_numbers.sort_by { |v| Gem::Version.new(v) }.last
-    package_folders.select { |p| p.include?(latest_version) }
+    %w[dmg rpm deb].map do |type|
+      latest_package_for(type, package_folders)
+    end.compact
+  end
+
+  def latest_package_for(type, package_folders)
+    folders = package_folders.select { |p| p.include?(".#{type}") }
+    VersionSorter.sort(folders).last
   end
 
   # Public: Returns files in the folder.
